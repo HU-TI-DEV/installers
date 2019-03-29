@@ -1,4 +1,4 @@
-To start with bmptk/halwib on ubuntu under VMware:
+To start with bmptk/hwib on ubuntu under VMware:
 
 - get WMware workstation player
 - get the Ubuntu 18.04.2 LTS ISO from https://www.ubuntu.com/download/desktop

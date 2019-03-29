@@ -1,8 +1,8 @@
 apt install make
 add-apt-repository ppa:ubuntu-toolchain-r/test
 add-apt-repository ppa:team-gcc-arm-embedded/ppa
-sudo apt-get update
+apt-get update
+apt-get install gcc-8 g++-8
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
 apt-get install gcc-arm-embedded
-sudo apt-get install gcc-8 g++-8
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
-sudo apt-get install bossa-cli
+apt-get install bossa-cli
