@@ -1,4 +1,4 @@
-chmod 777 ubuntu1
+chmod 777 ~/installers/ubuntu1
 sudo ~/installers/ubuntu1
-chmod 777 ubuntu2
+chmod 777 ~/installers/ubuntu2
 ~/installers/ubuntu2

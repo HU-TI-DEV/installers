@@ -19,5 +19,6 @@ dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.la
 dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.so.0.0.0 --rename /usr/lib/libcc1.so.0.0.0
 apt-get install -y gcc-arm-embedded
 
-ln /usr/bin/make /usr/bin/bmptk-make
-ln /usr/echo /usr/bin/pause
+ln -s /usr/bin/make /usr/bin/bmptk-make
+echo read -n 1 -s -r -p "Press any key to continue" >/usr/bin/pause
+chmod 777 /usr/bin/pause
