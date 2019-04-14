@@ -1,0 +1,9 @@
+git clone https://github.com/catchorg/Catch2
+git clone https://github.com/wovo/bmptk
+git clone https://github.com/wovo/hwlib
+git clone https://github.com/wovo/v1oopc-examples
+
+ln /usr/bin/make /usr/bin/bmptk-make
+ln /usr/echo /usr/bin/pause
+cd ~/bmptk/tools/lpc21isp_197
+make

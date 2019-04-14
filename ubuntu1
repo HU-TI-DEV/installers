@@ -1,0 +1,23 @@
+apt-get install -y make
+apt-get install -y bossa-cli
+apt-get install -y avrdude
+apt-get install -y codelite
+apt-get install -y libcanberra-gtk-module
+apt-get install -y doxygen
+apt-get install -y libsfml-dev
+
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
+add-apt-repository -y ppa:team-gcc-arm-embedded/ppa
+apt-get update -y
+apt-get install -y gcc-8 g++-8
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+apt-get install -y avr-gcc 
+apt-get install -y avr-libc
+dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.so --rename /usr/lib/libcc1.so
+dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.so.0 --rename /usr/lib/libcc1.so.0
+dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.la --rename /usr/lib/libcc1.la
+dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.so.0.0.0 --rename /usr/lib/libcc1.so.0.0.0
+apt-get install -y gcc-arm-embedded
+
+ln /usr/bin/make /usr/bin/bmptk-make
+ln /usr/echo /usr/bin/pause

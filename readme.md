@@ -10,16 +10,28 @@ To start with bmptk/hwib on Ubuntu under VMware:
    - chmod 777 installers/ubuntu
    - sudo installers/ubuntu
    (this takes some time)
+- for convenience: set the Firefox start pagina to the hwlib documentation
+   - cd ~/hwlib
+   - firefox index.html
+   - settings->prefrences->home->homepage:custom urls->use current page   
    
-- to verify a native build run these commands:
-   - cd ~/v1oopc-examples/00-00-hello
-   - make run 
-   (after building the executable should run and print "Hello world")
-- to verify a build for the Arduino Due connect it and run these commands:
-   (VMware must have the focus while you plug in the Arduino)
-   - cd ~/v1oopc-examples/*-blink-hwlib
-   - make run 
-   (after building the executable should download to the Due and the LED should blink)
+- to verify the various types of builds, run the indicated commands
+   - native:
+      - cd ~/v1oopc-examples/00-00-hello
+      - make run 
+      (after building the executable should run and print "Hello world")
+   - basic Arduino Due:
+      (VMware must have the focus while you plug in the Arduino)
+      - cd ~/v1oopc-examples/*-blink-hwlib
+      - make run 
+      (after building the executable should download to the Due and the LED should blink)
+   - Arduino Due serial link:
+      (assuming you have the Arduino Due still plugged in)
+      - cd ~/v1oopc-examples/*-cout
+      - make run 
+      (after building the executable should run and )
+	  
+	  
 - to verify CodeLite
    - create
    - start codelite
@@ -34,8 +46,5 @@ To start with bmptk/hwib on Ubuntu under VMware:
 - download v1oopc-examples   
 - codelite & python
 
-- for convenience: set the Firefox start pagina to the hwlib documentation
-   - cd ~/hwlib
-   - firefox index.html
-   - settings->prefrences->home->homepage:custom urls->use current page
+
    
