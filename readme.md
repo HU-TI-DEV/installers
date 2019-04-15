@@ -6,12 +6,12 @@ To start with bmptk/hwib on Ubuntu under VMware:
 - log in, open a terminal, click through the friendly welcome screens
 - run these commands:
    - sudo apt -y install git
-   - cd ~; :git clone https://www.github.com/wovo/installers
-   - chmod 777 ~/installers/ubuntu; sudo ~/installers/ubuntu
+   - cd ~; git clone https://www.github.com/wovo/installers
+   - chmod 777 ~/installers/ubuntu; ~/installers/ubuntu
    (this takes some time)
 - for convenience: set the Firefox start pagina to the hwlib documentation
    - cd ~/hwlib
-   - firefox index.html
+   - firefox index.html &
    - settings->prefrences->home->homepage:custom urls->use current page   
    
 - to verify the various types of builds, run the indicated commands
@@ -34,7 +34,7 @@ To start with bmptk/hwib on Ubuntu under VMware:
    - cd ~/v1oopc-examples; ./update*.bat; codelite __codelite.workspace &
    (click next on a few screens)
    double-click on the first project (it must be black); select build->run
-   (a few more screens; select any compiler (g++ is OK))
+   (a few more screens; select 'only run'; select any compiler (g++ is OK))
    (the screen with the result can end up behind the CodeLite screen)
    
 
