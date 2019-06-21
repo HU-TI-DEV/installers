@@ -11,6 +11,6 @@ make
 cd ~/hwlib
 make doxygen
 
-chmod 777 ~/v1oopc-bmptk/_update*.bat
-chmod 777 ~/v1oopc-hwlib/_update*.bat
+chmod 777 ~/bmptk/_update*.bat
+chmod 777 ~/hwlib/_update*.bat
 chmod 777 ~/v1oopc-examples/_update*.bat

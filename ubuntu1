@@ -5,6 +5,7 @@ apt-get install -y codelite
 apt-get install -y libcanberra-gtk-module
 apt-get install -y doxygen
 apt-get install -y libsfml-dev
+apt-get install -y libusb-1.0-0-dev
 
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 add-apt-repository -y ppa:team-gcc-arm-embedded/ppa
