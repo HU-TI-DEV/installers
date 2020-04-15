@@ -33,7 +33,7 @@ To start with bmptk/hwib on Ubuntu under VMware:
 - to start with codelite:
    - cd ~/v1oopc-examples; ./update*.bat; codelite __codelite.workspace &
    (click next on a few screens)
-   double-click on the first project (it must be black); select build->run
+   - double-click on the first project (it must be black); select build->run
    (a few more screens; select 'only run'; select any compiler (g++ is OK))
    (the screen with the result can end up behind the CodeLite screen)
    
