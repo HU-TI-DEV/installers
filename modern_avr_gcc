@@ -3,7 +3,7 @@
 # for the current user
 
 cd ~
-ftp https://blog.zakkemble.net<<FTP-COMMANDS
+ftp -n https://blog.zakkemble.net<<FTP-COMMANDS
 quote USER anonymous
 quote PASS anonymous
 pas
