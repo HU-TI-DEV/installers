@@ -3,7 +3,7 @@
 # for the current user
 
 cd ~
-wget https://blog.zakkemble.net/avr-gcc-9.2.0-x64-linux.tar.bz2
+wget https://blog.zakkemble.net/download/avr-gcc-9.2.0-x64-linux.tar.bz2
 tar -xf avr-gcc-9.2.0-x64-linux.atr.bz2
 mv avr-gcc-9.2.0-x64-linux avr-gcc
 rm avr-gcc-9.2.0-x64-linux.tar.bz2
