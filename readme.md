@@ -31,19 +31,15 @@ To start with bmptk/hwib on Ubuntu under VMware:
       (You should see "cout demo" and a few more lines)
 	  
 - to start with codelite:
-<<<<<<< HEAD
-   - cd ~/v1oopc-examples; ./update*.bat; codelite __codelite.workspace &
-   (click next on a few screens)
-   - double-click on the first project (it must be black); select build->run
-   (a few more screens; select 'only run'; select any compiler (g++ is OK))
-=======
    - cd ~/v1oopc-examples; ./update*.bat; sudo codelite __codelite.workspace &
    (click next on a few screens; I prefer the "Classic Eclipse" color scheme)
    double-click on the first project (it must be black); select build->run
    (a few more screens; select 'Execute' and check the box; wen asked, select any compiler (g++ is OK))
->>>>>>> 3b99d06f3a39ec399414a1f7d1225e5a7d91c336
    (the screen with the result can end up behind the CodeLite screen)
    
+   
+The script modern_avr_gcc downloads a modern (gcc 9.2.0)
+compiler and installs it for the current user.
 
 
 
