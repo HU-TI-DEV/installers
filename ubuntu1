@@ -5,6 +5,7 @@ apt-get install -y codelite
 apt-get install -y libcanberra-gtk-module
 apt-get install -y doxygen
 apt-get install -y libsfml-dev
+apt-get install -y libusb-1.0-0-dev
 
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 add-apt-repository -y ppa:team-gcc-arm-embedded/ppa
@@ -19,6 +20,9 @@ dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.la
 dpkg-divert --package gcc-arm-embedded --divert /usr/lib/gcc/avr/5.4.0/libcc1.so.0.0.0 --rename /usr/lib/libcc1.so.0.0.0
 apt-get install -y gcc-arm-embedded
 
-ln -s /usr/bin/make /usr/bin/bmptk-make
+ln -s /usr/bin/make  /usr/bin/bmptk-make
+ln -s /usr/echo      /usr/bin/pause
+
 echo read -n 1 -s -r -p "Press any key to continue" >/usr/bin/pause
 chmod 777 /usr/bin/pause
+    
