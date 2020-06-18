@@ -48,6 +48,9 @@ Post installation:
    (a few more screens; select 'Execute' and check the box; wen asked, select any compiler (g++ is OK))
    (the screen with the result can end up behind the CodeLite screen)
    
+   
+The script modern_avr_gcc downloads a modern (gcc 9.2.0)
+compiler and installs it for the current user.
 
 
 
