@@ -1,13 +1,24 @@
-To start with bmptk/hwib on Ubuntu under VMware:
+To start with bmptk/hwib on Ubuntu 
+
+Checked with:
+
+   - Ubuntu 18.04.2 LTS
+   - Ubuntu 20.04 LTS
+
+When running under VMware:
 
 - get WMware workstation player (or VirtualBox, or run plain Linux)
-- get the Ubuntu 18.04.2 LTS ISO from https://www.ubuntu.com/download/desktop
+
+Anyway:
+
 - create an image from the iso (remember the password!) - this will take some time...
 - log in, open a terminal, click through the friendly welcome screens
 - run these commands in your home directory:
    - sudo apt-get install -y git
    - git clone https://www.github.com/wovo/installers
-   - chmod 777 ~/installers/ubuntu; ~/installers/ubuntu
+   - source installers/install
+   
+Post installation:   
    
 - for convenience: set the Firefox start pagina to the hwlib documentation
    - cd ~/hwlib

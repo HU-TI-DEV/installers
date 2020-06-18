@@ -1,4 +1,0 @@
-chmod +x ~/installers/ubuntu1
-sudo ~/installers/ubuntu1
-chmod +x ~/installers/ubuntu2
-~/installers/ubuntu2

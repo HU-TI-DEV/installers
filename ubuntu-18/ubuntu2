@@ -1,3 +1,5 @@
+cd ~
+
 git clone https://github.com/catchorg/Catch2
 git clone https://github.com/wovo/bmptk
 git clone https://github.com/wovo/hwlib
@@ -7,7 +9,6 @@ git clone https://github.com/wovo/v1oopc-examples
 cd ~/hwlib
 make doxygen
 
-chmod 777 ~/installers/_pull*.bat
-chmod 777 ~/bmptk/_pull*.bat
-chmod 777 ~/hwlib/_pull*.bat
-chmod 777 ~/v1oopc-examples/_pull*.bat
+chmod +x ~/bmptk/_pull*.bat
+chmod +x ~/hwlib/_pull*.bat
+chmod +x ~/v1oopc-examples/_pull*.bat

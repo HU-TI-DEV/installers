@@ -1,0 +1,20 @@
+apt-get update -y
+
+apt-get install -y make
+apt-get install -y bossa-cli
+apt-get install -y avrdude
+apt-get install -y codelite
+apt-get install -y libcanberra-gtk-module
+apt-get install -y doxygen
+apt-get install -y libsfml-dev
+apt-get install -y libusb-1.0-0-dev
+apt-get install -y gcc-10
+apt-get install -y g++-10
+apt-get install -y gcc-arm-embedded
+
+ln -s /usr/bin/make  /usr/bin/bmptk-make
+ln -s /usr/echo      /usr/bin/pause
+
+echo read -n 1 -s -r -p "Press any key to continue" >/usr/bin/pause
+chmod 777 /usr/bin/pause
+    
