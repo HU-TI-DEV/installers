@@ -1,13 +1,13 @@
 if [[ $(lsb_release -rs) == "18.04" ]]; then
 
    echo "install for 18.04"
-   cd ubuntu-18
+   cd installers/ubuntu-18
    source install
    
 elif [[ $(lsb_release -rs) == "20.04" ]]; then
 
    echo "install for 18.04"
-   cd ubuntu-20
+   cd installers/ubuntu-20
    source install
 
 else
