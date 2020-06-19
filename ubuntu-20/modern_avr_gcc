@@ -5,16 +5,16 @@
 cd ~
 
 echo "download"
-wget https://blog.zakkemble.net/download/avr-gcc-9.2.0-x64-linux.tar.bz2
+wget https://blog.zakkemble.net/download/avr-gcc-10.1.0-x64-linux.tar.bz2
 
 echo "unpack"
-tar -xf avr-gcc-9.2.0-x64-linux.tar.bz2
+tar -xf avr-gcc-10.1.0-x64-linux.tar.bz2
 
 echo "put stuff at the right place"
-mv avr-gcc-9.2.0-x64-linux avr-gcc
-rm avr-gcc-9.2.0-x64-linux.tar.bz2
+mv avr-gcc-10.1.0-x64-linux ~/avr-gcc
+rm avr-gcc-10.1.0-x64-linux.tar.bz2
 chmod +x ~/avr-gcc/bin
 chmod +x ~/avr-gcc/avr/bin
 
 echo "add to PATH"
-echo "export PATH=\"~/avr-gcc/avr/bin:~/avr-gcc/bin:\$PATH\"" >> .bashrc
+echo "export PATH=\"~/avr-gcc/avr/bin:~/avr-gcc/bin:\$PATH\"" >> .profile

@@ -2,3 +2,5 @@ chmod +x ubuntu1
 sudo ./ubuntu1
 chmod +x ubuntu2
 ./ubuntu2
+chmod +x modern_avr_gcc
+./modern_avr_gcc
