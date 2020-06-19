@@ -9,7 +9,8 @@ apt-get install -y libsfml-dev
 apt-get install -y libusb-1.0-0-dev
 apt-get install -y gcc-10
 apt-get install -y g++-10
-apt-get install -y gcc-arm-embedded
+apt-get install -y gcc-arm-none-eabi
+apt-get install -y geany
 
 ln -s /usr/bin/make  /usr/bin/bmptk-make
 ln -s /usr/echo      /usr/bin/pause
