@@ -3,6 +3,7 @@ cd ~
 git clone https://github.com/catchorg/Catch2
 git clone https://github.com/wovo/bmptk
 git clone https://github.com/wovo/hwlib
+git clone https://github.com/wovo/godafoss
 git clone https://github.com/wovo/rtos
 git clone https://github.com/wovo/v1oopc-examples
 
