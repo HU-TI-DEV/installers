@@ -1,4 +1,5 @@
 .clang
+.idea/
 .codelite/
 _codelite.project
 __codelite.workspace
