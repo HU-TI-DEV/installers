@@ -74,9 +74,12 @@ logger.info("Start installation")
 # Prerequisites
 logger.info(("Verifying 7zip and git are installed"))
 
-# no need to find python as this program would not work
-PythonProgram = "python"
-# !! NB: python could also have been invoked with its path.
+# Make sure we have Python in the path
+PythonProgram = ""
+executablePath = distutils.spawn.find_executable("python.exe")
+if executablePath is not None:
+    PythonProgram = executablePath
+
 
 # find 7z.exe (32 bit or 64 bit version)
 ZipProgram = ""
@@ -102,11 +105,16 @@ if GitProgram == "":
         GitProgram = executablePath
 
 
+if PythonProgram == "":
+    logger.info("Cannot find Python in the PATH. Cancelling installation")
+else:
+    logger.info("found  Python.exe : " + PythonProgram)
+
 if ZipProgram == "":
     logger.info("Cannot find installation of 7z. Cancelling installation")
     logger.info("Please install 7z from https://www.7-zip.org/download.html")
 else:
-    logger.info("found 7z program : " + ZipProgram)
+    logger.info("found  7z program : " + ZipProgram)
 
 if GitProgram == "":
     logger.info("Cannot find installation of GIT. Cancelling installation")
@@ -114,7 +122,7 @@ if GitProgram == "":
 else:
     logger.info("found GIT program : " + GitProgram)
 
-if ZipProgram == "" or GitProgram == "":
+if "" in [ PythonProgram, ZipProgram, GitProgram ]:
     # We cannot continue
     logger.info("Required program not found. Installation aborted.")
     exit(1)
