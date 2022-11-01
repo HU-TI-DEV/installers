@@ -292,7 +292,7 @@ logger.info("Created set_env.bat file.")
 logger.info("Prepare example folders for CodeLite and HCT...")
 example_folders = ["v1oopc-examples", "v2cpse1-examples", "v2cpse2-examples", "v2thde-examples"]
 # Add HCT CMake Lists to all example folders
-with open("../HCT/Voorbeeld_CMakeLists.txt", "rt") as ctfile:
+with open("HCT/Voorbeeld_CMakeLists.txt", "rt") as ctfile:
     cmake_template = ctfile.read()
 # Now use the CMake List template file to create a CMake List per project
 for ex_folder in example_folders:
