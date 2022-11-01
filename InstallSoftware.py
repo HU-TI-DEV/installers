@@ -154,7 +154,7 @@ for repo in GitRepositories:
 
 logger.info("Downloading Compilers")
 for compiler in Compilers:
-    if compiler == "GCC-AVR":
+    if compiler[0] == "GCC-AVR":
         logger.info("Download AVR Compiler")
         compilerFile = "AVR-Compiler.tar.gz"
         if os.path.exists(compilerFile):
