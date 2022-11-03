@@ -17,7 +17,6 @@ import distutils.spawn  # Invoke sub processes
 import urllib.request  # Download file
 import tarfile  # Unpack TAR (Tape ARchive) file
 
-
 zipLocations = ["C:\\Program Files\\7-Zip\\7z.exe",
                 "C:\\Program Files (x86)\\7-Zip\\7z.exe"]
 
@@ -25,14 +24,14 @@ gitLocations = ["C:\\Program Files\\Git\\cmd\\git.exe",
                 "C:\\Program Files (x86)\\Git\\cmd\\git.exe"]
 
 GitRepositories = ["https://github.com/HU-TI-DEV/bmptk.git",
-                "https://github.com/HU-TI-DEV/hwlib.git",
-                "https://github.com/HU-TI-DEV/rtos.git",
-                "https://github.com/HU-TI-DEV/v1oopc-examples.git",
-                "https://github.com/HU-TI-DEV/v2cpse1-examples.git",
-                "https://github.com/HU-TI-DEV/v2cpse2-examples.git",
-                "https://github.com/HU-TI-DEV/v2thde-examples.git",
-                "https://github.com/catchorg/Catch2.git",
-                "https://github.com/HU-TI-DEV/HCT.git"]
+                   "https://github.com/HU-TI-DEV/hwlib.git",
+                   "https://github.com/HU-TI-DEV/rtos.git",
+                   "https://github.com/HU-TI-DEV/v1oopc-examples.git",
+                   "https://github.com/HU-TI-DEV/v2cpse1-examples.git",
+                   "https://github.com/HU-TI-DEV/v2cpse2-examples.git",
+                   "https://github.com/HU-TI-DEV/v2thde-examples.git",
+                   "https://github.com/catchorg/Catch2.git",
+                   "https://github.com/HU-TI-DEV/HCT.git"]
 
 AVR_COMPILER = "https://github.com/CrustyAuklet/avr-libstdcxx/releases/download/v9.2.0/avr-gcc-9.2.0-P0829-x86_64-w64-mingw32.tar.gz"
 
@@ -46,8 +45,6 @@ Compilers = [["GCC-ARM",
               "https://www.sfml-dev.org/files/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit.zip"]]
 
 
-
-
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
         s = os.path.join(src, item)
@@ -56,6 +53,18 @@ def copytree(src, dst, symlinks=False, ignore=None):
             shutil.copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
+
+
+def safepath(string):
+    """
+    :param string: Pathname, potentially containing spaces
+    :return: string in quotes if it contained spaces and did not start with a quote.
+    """
+    string = string.strip()
+    quote = '"'
+    if (' ' in string) and (string[0] != quote):
+        string = quote + string + quote
+    return string
 
 
 # determine environment
@@ -72,43 +81,39 @@ logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 # get current working folder
-CWD = pathlib.Path().absolute().__str__() + "\\"
+CWD = str(pathlib.Path().absolute().resolve()) + "\\"
 
 logger.info("Start installation")
 
 # Prerequisites
-logger.info(("Verifying 7zip and git are installed"))
+logger.info("Verifying Python, 7zip, git are installed (PATH and elsewhere)")
 
 # Make sure we have Python in the path
 PythonProgram = ""
 executablePath = distutils.spawn.find_executable("python.exe")
 if executablePath is not None:
-    PythonProgram = executablePath
+    PythonProgram = safepath(executablePath)
 
-
-# find 7z.exe (32 bit or 64 bit version)
+# Find 7z.exe (32 bit or 64 bit version)
 ZipProgram = ""
-for file in zipLocations:
-    if os.path.exists(file):
-        ZipProgram = file
-
+executablePath = distutils.spawn.find_executable("7z.exe")
+if executablePath is not None:
+    ZipProgram = safepath(executablePath)
 if ZipProgram == "":
-    executablePath = distutils.spawn.find_executable("7z.exe")
-    if executablePath is not None:
-        ZipProgram = executablePath
+    for file in zipLocations:
+        if os.path.exists(file):
+            ZipProgram = file
 
-
-# find git.exe
+# Find git.exe
 GitProgram = ""
-for file in gitLocations:
-    if os.path.exists(file):
-        GitProgram = file
-
+executablePath = distutils.spawn.find_executable("git.exe")
+if executablePath is not None:
+    GitProgram = safepath(executablePath)
 if GitProgram == "":
-    executablePath = distutils.spawn.find_executable("git.exe")
-    if executablePath is not None:
-        GitProgram = executablePath
-
+    for file in gitLocations:
+        if os.path.exists(file):
+            GitProgram = safepath(file)
+            break
 
 if PythonProgram == "":
     logger.info("Cannot find Python in the PATH. Cancelling installation")
@@ -127,12 +132,10 @@ if GitProgram == "":
 else:
     logger.info("found GIT program : " + GitProgram)
 
-if "" in [ PythonProgram, ZipProgram, GitProgram ]:
+if "" in [PythonProgram, ZipProgram, GitProgram]:
     # We cannot continue
     logger.info("Required program not found. Installation aborted.")
     exit(1)
-
-
 
 # Download and install our GIT repositories
 logger.info("Downloading GIT repositories")
@@ -152,9 +155,10 @@ for repo in GitRepositories:
             os.system(GitProgram + ' checkout v2.x')
             os.chdir("..")
 
-logger.info("Downloading Compilers")
+logger.info("Downloading and unpacking Compilers")
 for compiler in Compilers:
     if compiler[0] == "GCC-AVR":
+        # TODO: re-integrate into normal workflow (except decompression)
         logger.info("Download AVR Compiler")
         compilerFile = "AVR-Compiler.tar.gz"
         if os.path.exists(compilerFile):
@@ -171,7 +175,7 @@ for compiler in Compilers:
         tar.close()
         compiler.append(AVR_Folder)
         logger.info("AVR Compiler installed")
-    else:
+    else:  # compiler is not GCC-AVR
         # get our local file name
         compilerFile = compiler[1][compiler[1].rfind("/") + 1:]
         # add column in compiler with our BIN path name for the custom make later on
@@ -191,19 +195,22 @@ for compiler in Compilers:
             # start download
             urllib.request.urlretrieve(compiler[1], compilerFile)
             # check if filesizes are equal
-            if os.stat(compilerFile).st_size == fileSize:
+            localsize = os.stat(compilerFile).st_size
+            if localsize == fileSize:
                 logger.info("Download " + compilerFile + " was successful")
                 decompressable = True
             else:
-                logger.info("Download " + compilerFile + " failed. Downloaded " + os.stat(
-                    compilerFile).st_size + " should be : " + fileSize)
+                logger.info("Download " + compilerFile + " failed. "
+                                                         "Downloaded " + localsize + ", should be " + fileSize)
                 decompressable = False
-        # if it seems decompressable, may as well do it
+                # TODO: retry the download a number of times (?)
+        # let's decompress the file if we can
         if decompressable:
             # extract in root of compilername
             foldername = compilerFile[0:compilerFile.rfind(".")]
             logger.info("Decompressing " + compilerFile + "...")
             # TODO: see if finding install directory is better choice
+            # Special handling for SFML
             if foldername.find("SFML-2.5.1") >= 0:
                 # delete any old SFML-2.5.1-32 folder
                 logger.info("Delete any existing SFML-2.5.1-32 folder")
@@ -216,7 +223,7 @@ for compiler in Compilers:
                 # we get more output lines but need some cleaning
                 data = str(process.stdout)[2:-3].replace('\\r', '').replace('\\n', '\n').splitlines()
                 for line in data:
-                    logger.info(line)
+                    logger.info('  ' + line)
                 # rename the folder to SFML-2.5.1-32
                 logger.info("Rename SFML-2.5.1 to SFML-2.5.1-32")
                 os.rename("SFML-2.5.1", "SFML-2.5.1-32")
@@ -230,7 +237,8 @@ for compiler in Compilers:
                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 data = str(process.stdout)[2:-3].replace('\\r', '').replace('\\n', '\n').splitlines()
                 for line in data:
-                    logger.info(line)
+                    logger.info('  ' + line)
+logger.info("Downloaded and unpacked Compilers")
 
 # Special operation for the windows GCC-WIN compiler
 for compiler in Compilers:
@@ -249,44 +257,36 @@ with open("bmptk\\Makefile.local") as makefile:
     makeLines = makefile.readlines()
 
 windowsPart = False
-custom = open("bmptk\\Makefile.custom", "wt")
+with open("bmptk\\Makefile.custom", "wt") as custom:
+    for line in makeLines:
+        line = line.strip()
+        # Flag the Windows part for processing
+        if windowsPart:
+            if "else" in line:
+                windowsPart = False
+        else:  # not in windowsPart
+            if "ifeq ($(OS),Windows_NT" in line:
+                windowsPart = True
+        # Process the line as appropriate
+        outputLine = line
+        commentLine = (len(line) < 1) or (line.startswith("#"))
+        if windowsPart and not commentLine:
+            # if a line starts with a compiler definition, change it
+            for compiler in Compilers:
+                if line.startswith(compiler[0]):
+                    outputLine = "   " + compiler[0] + "          ?= ..\\..\\" + compiler[2]
+        custom.write(outputLine + "\n")
 
-for line in makeLines:
-    line = line.strip()
-    # skip empty lines and comment lines
-    if (len(line) < 1) or (line[0] == "#"):
-        continue
-    # check if this is the Windows part
-    if line.find("ifeq ($(OS),Windows_NT") >= 0:
-        windowsPart = True
-    # only process the Windows part
-    if not windowsPart:
-        continue
-    if line.find("else") >= 0:
-        windowsPart = False
-        continue
-    # scan if it is a compiler definition
-    outputLine = line
-    for compiler in Compilers:
-        searchArgument = compiler[0]
-        if len(line) >= len(searchArgument):
-            if line[0:len(searchArgument)] == searchArgument:
-                outputLine = "   " + compiler[0] + "          ?= ..\\..\\" + compiler[2]
-    custom.write(outputLine + "\n")
-
-custom.close()
 logger.info("Built Makefile.custom.")
 
 logger.info("Creating set_env.bat file...")
-pathSeparator = ";"
-# Check if we need to quote the pathname of the directory
-quote = '"' if CWD[0] != '"' and ' ' in CWD else ''
 with open('set_env.bat', 'wt') as batfile:
-    batfile.write('@echo off\n')
-    batfile.write('SET PATH=%PATH%' + pathSeparator + quote + CWD + 'bmptk\\tools' + quote + '\n')
+    pathSeparator = ';'
     GitPath = os.path.dirname(GitProgram)
-    batfile.write('SET PATH=%PATH%' + pathSeparator + GitPath + '\n')
-    batfile.write('SET HCT=' + CWD + 'HCT\n')
+    batfile.write('@echo off\n')
+    batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(CWD + 'bmptk\\tools') + '\n')
+    batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(GitPath) + '\n')
+    batfile.write('SET HCT=' + safepath(CWD + 'HCT') + '\n')
 logger.info("Created set_env.bat file.")
 
 logger.info("Prepare example folders for CodeLite and HCT...")
@@ -302,9 +302,9 @@ for ex_folder in example_folders:
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     data = process.stdout.splitlines()
     for line in data:
-        if type(line) == "<class 'bytes'>":
-            line.decode('latin-1')
-        logger.info(line)
+        if isinstance(line, bytes):
+            line = line.decode('latin-1')
+        logger.info('  ' + line)
     with open('CMakeLists.txt', "wt") as cmlfile:
         cmlfile.write(cmake_template.replace("your-project-name", ex_folder))
     os.chdir("..")
