@@ -61,9 +61,18 @@ def safepath(string):
     :return: string in quotes if it contained spaces and did not start with a quote.
     """
     string = string.strip()
+<<<<<<< Updated upstream
     quote = '"'
     if (' ' in string) and (string[0] != quote):
         string = quote + string + quote
+=======
+    # This type of quoting causes a problem with subprocess.run.
+    # Batch file PATH does not mind spaces, so for now we disable it:
+    if 0:
+        quote = '"'
+        if (' ' in string) and (string[0] != quote):
+            string = quote + string + quote
+>>>>>>> Stashed changes
     return string
 
 
@@ -89,36 +98,72 @@ logger.info("Start installation")
 logger.info("Verifying Python, 7zip, git are installed (PATH and elsewhere)")
 
 # Make sure we have Python in the path
+<<<<<<< Updated upstream
+=======
+PythonInPath = False
+>>>>>>> Stashed changes
 PythonProgram = ""
 executablePath = distutils.spawn.find_executable("python.exe")
 if executablePath is not None:
     PythonProgram = safepath(executablePath)
+<<<<<<< Updated upstream
 
 # Find 7z.exe (32 bit or 64 bit version)
+=======
+    PythonInPath = True
+
+# Find 7z.exe (32 bit or 64 bit version)
+ZipInPath = False
+>>>>>>> Stashed changes
 ZipProgram = ""
 executablePath = distutils.spawn.find_executable("7z.exe")
 if executablePath is not None:
     ZipProgram = safepath(executablePath)
+<<<<<<< Updated upstream
 if ZipProgram == "":
     for file in zipLocations:
         if os.path.exists(file):
             ZipProgram = file
 
 # Find git.exe
+=======
+    ZipInPath = True
+if not ZipInPath:
+    for file in zipLocations:
+        if os.path.exists(file):
+            ZipProgram = file
+            break
+
+# Find git.exe
+GitInPath = False
+>>>>>>> Stashed changes
 GitProgram = ""
 executablePath = distutils.spawn.find_executable("git.exe")
 if executablePath is not None:
     GitProgram = safepath(executablePath)
+<<<<<<< Updated upstream
+=======
+    GitInPath = False
+>>>>>>> Stashed changes
 if GitProgram == "":
     for file in gitLocations:
         if os.path.exists(file):
             GitProgram = safepath(file)
             break
 
+<<<<<<< Updated upstream
 if PythonProgram == "":
     logger.info("Cannot find Python in the PATH. Cancelling installation")
 else:
     logger.info("found  Python.exe : " + PythonProgram)
+=======
+if PythonInPath:
+    logger.info("found  Python.exe : " + PythonProgram)
+else:
+    logger.info("Cannot find Python in the PATH. Cancelling installation")
+
+# Python MUST be in the PATH, but for 7z annd git we accept additional locations.
+>>>>>>> Stashed changes
 
 if ZipProgram == "":
     logger.info("Cannot find installation of 7z. Cancelling installation")
@@ -282,10 +327,21 @@ logger.info("Built Makefile.custom.")
 logger.info("Creating set_env.bat file...")
 with open('set_env.bat', 'wt') as batfile:
     pathSeparator = ';'
+<<<<<<< Updated upstream
     GitPath = os.path.dirname(GitProgram)
     batfile.write('@echo off\n')
     batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(CWD + 'bmptk\\tools') + '\n')
     batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(GitPath) + '\n')
+=======
+    batfile.write('@echo off\n')
+    if not GitInPath:
+        GitPath = os.path.dirname(GitProgram)
+        batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(GitPath) + '\n')
+    if not ZipInPath:
+        ZipPath = os.path.dirname(ZipProgram)
+        batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(ZipPath) + '\n')
+    batfile.write('SET PATH=%PATH%' + pathSeparator + safepath(CWD + 'bmptk\\tools') + '\n')
+>>>>>>> Stashed changes
     batfile.write('SET HCT=' + safepath(CWD + 'HCT') + '\n')
 logger.info("Created set_env.bat file.")
 
