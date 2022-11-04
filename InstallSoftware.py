@@ -118,7 +118,7 @@ GitProgram = ""
 executablePath = distutils.spawn.find_executable("git.exe")
 if executablePath is not None:
     GitProgram = safepath(executablePath)
-    GitInPath = False
+    GitInPath = True
 if GitProgram == "":
     for file in gitLocations:
         if os.path.exists(file):
