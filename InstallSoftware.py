@@ -238,11 +238,15 @@ for compiler in Compilers:
                     logger.info('  ' + line)
                 # rename the folder to SFML-2.5.1-32
                 logger.info("Rename SFML-2.5.1 to SFML-2.5.1-32")
-                os.rename("SFML-2.5.1", "SFML-2.5.1-32")
-                # HP comment: if we did not remove the old SFML-2.5.1-32 folder, there is a name clash!
-                # The rename is giving problems concerning rights. Just copy the folder and delete the original
-                # copytree("sfml-2.5.1", "sfml-2.5.1-32")
-                # shutil.rmtree('SFML-2.5.1', ignore_errors=True)
+                try:
+                    os.rename("SFML-2.5.1", "SFML-2.5.1-32")
+                except:
+                    logger.error("FAIL Rename SFML-2.5.1 to SFML-2.5.1-32, trying copy-and-delete")
+                    # Observation on HU employee laptop:
+                    # The rename is giving problems concerning rights (WinError 5).
+                    # For now, let's copy the folder and delete the original.
+                    copytree("sfml-2.5.1", "sfml-2.5.1-32")
+                    shutil.rmtree('SFML-2.5.1', ignore_errors=True)
             else:  # not SFML-2.5.1
                 process = subprocess.run(
                     [ZipProgram, "x", compilerFile, "-o" + foldername, "-y"],
@@ -328,4 +332,6 @@ logger.info("Prepared example folders for CodeLite and HCT.")
 
 # done
 logger.info("Execute set_env.bat to prepare your environment whenever opening a command shell.")
+logger.info("Alternatively you can add the HCT environment variable, plus any the missing program"
+            "directories to the PATH variable in your user environment.")
 logger.info("Installation complete.\n")
