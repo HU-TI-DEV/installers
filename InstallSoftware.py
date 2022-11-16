@@ -156,6 +156,7 @@ for repo in GitRepositories:
     if os.path.exists(repoName):
         logger.info("Skipping git clone. Repository " + repoName + " exists and/or is not empty.")
     else:
+        logger.info("Start cloning repository " + repoName)
         process = subprocess.run([GitProgram, "clone", repo, repoName],
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         data = str(process.stdout)
@@ -164,7 +165,8 @@ for repo in GitRepositories:
         if repoName == "Catch2":
             logger.info("adjusting Catch2 - checkout v2.x")
             os.chdir(repoName)
-            os.system(GitProgram + ' checkout v2.x')
+            process = subprocess.run([GitProgram, "checkout", "v2.x"],
+                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             os.chdir("..")
 
 logger.info("Downloading and unpacking Compilers")
