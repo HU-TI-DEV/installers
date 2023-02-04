@@ -6,6 +6,9 @@
 # date              : 01-11-2022
 # latest change     : Refactor code-example directory CMake List generation.
 #
+# GitLab LINK       : https://github.com/HU-TI-DEV/installers/blob/master/InstallSoftware.py
+# DOCUMENTATIE      : https://github.com/HU-TI-DEV/installers/blob/master/doc/Installeren-Windows.pdf
+#
 import os.path  # Pathnames in Windows
 import subprocess  # Call sub processes
 import pathlib  # Path functions
@@ -71,7 +74,7 @@ def safepath(string):
 
 
 # determine environment
-print((str(struct.calcsize("P") * 8) + " Bits machine"))
+print((str(struct.calcsize("P") * 8) + " bit machine"))
 
 # Create our logger
 logging.basicConfig(level=logging.DEBUG,
@@ -125,10 +128,10 @@ if GitProgram == "":
             GitProgram = safepath(file)
             break
 
-if PythonInPath:
-    logger.info("found  Python.exe : " + PythonProgram)
-else:
+if PythonProgram == "":
     logger.info("Cannot find Python in the PATH. Cancelling installation")
+else:
+    logger.info("found  Python.exe : " + PythonProgram)
 
 # Python MUST be in the PATH, but for 7z annd git we accept additional locations.
 
