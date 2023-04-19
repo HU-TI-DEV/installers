@@ -5,14 +5,12 @@
 cd ~
 
 echo "download"
-wget https://blog.zakkemble.net/download/avr-gcc-10.1.0-x64-linux.tar.bz2
+wget https://github.com/ZakKemble/avr-gcc-build/releases/download/v12.1.0-1/avr-gcc-12.1.0-x64-linux.tar.bz2
 
-echo "unpack"
-tar -xf avr-gcc-10.1.0-x64-linux.tar.bz2
-
+echo "unpack"a
 echo "put stuff at the right place"
-mv avr-gcc-10.1.0-x64-linux ~/avr-gcc
-rm avr-gcc-10.1.0-x64-linux.tar.bz2
+mv avr-gcc-12.1.0-x64-linux ~/avr-gcc
+rm avr-gcc-12.1.0-x64-linux.tar.bz2
 chmod +x ~/avr-gcc/bin
 chmod +x ~/avr-gcc/avr/bin
 
