@@ -8,7 +8,7 @@ if [[ $(lsb_release -rs) == "18.04" ]]; then
 elif [[ $(lsb_release -rs) == "20.04" ]]; then
 
    echo "install for 20.04"
-   cd installers/ubuntu-20
+   cd installers/ubuntu-20-22
    source ./install
    cd ../..
 

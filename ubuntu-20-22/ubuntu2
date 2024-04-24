@@ -1,0 +1,15 @@
+cd ~
+
+git clone https://github.com/catchorg/Catch2
+git clone https://github.com/HU-TI-DEV/bmptk
+git clone https://github.com/HU-TI-DEV/hwlib
+git clone https://github.com/HU-TI-DEV/godafoss
+git clone https://github.com/HU-TI-DEV/rtos
+git clone https://github.com/HU-TI-DEV/v1oopc-examples
+
+cd ~/hwlib
+make doxygen
+
+chmod +x ~/bmptk/_pull*.bat
+chmod +x ~/hwlib/_pull*.bat
+chmod +x ~/v1oopc-examples/_pull*.bat
