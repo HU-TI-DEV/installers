@@ -4,21 +4,38 @@
 # date              : 17-5-2021
 # author            : Hagen Patzke 2022
 # date              : 01-11-2022
-# latest change     : Refactor code-example directory CMake List generation.
+# change            : Refactor code-example directory CMake List generation.
+# author            : Hagen Patzke 2025
+# date              : 12-01-2025
+# latest change     : Replace find_executable with non-deprecated shutil/which for Python 3.12 and later,
+#                     update file paths for GCC-WIN (SSL cert error) and GCC-ARM (file not found).
 #
 # GitLab LINK       : https://github.com/HU-TI-DEV/installers/blob/master/InstallSoftware.py
 # DOCUMENTATIE      : https://github.com/HU-TI-DEV/installers/blob/master/doc/Installeren-Windows.pdf
 #
+import sys  # System functions
+
+if sys.version_info.major != 3:
+    raise Exception("Sorry, this Python script only supports Python 3. Installation aborted.")
+#
+# Now we can continue
 import os.path  # Pathnames in Windows
 import subprocess  # Call sub processes
 import pathlib  # Path functions
 import logging  # log
-import sys  # System functions
 import struct  # Structs for system info
 import shutil  # Shell utilities
-import distutils.spawn  # Invoke sub processes
 import urllib.request  # Download file
 import tarfile  # Unpack TAR (Tape ARchive) file
+
+# Package distutils.spawn was removed in Python 3.12
+# see https://github.com/aws/sagemaker-python-sdk/issues/3028
+if sys.version_info.minor < 12:
+    # 3.11 and earlier
+    from distutils.spawn import find_executable as findExecutable
+else:
+    # 3.12 and later
+    from shutil import which as findExecutable
 
 zipLocations = ["C:\\Program Files\\7-Zip\\7z.exe",
                 "C:\\Program Files (x86)\\7-Zip\\7z.exe"]
@@ -36,16 +53,19 @@ GitRepositories = ["https://github.com/HU-TI-DEV/bmptk.git",
                    "https://github.com/catchorg/Catch2.git",
                    "https://github.com/HU-TI-DEV/HCT.git"]
 
-AVR_COMPILER = "https://github.com/CrustyAuklet/avr-libstdcxx/releases/download/v9.2.0/avr-gcc-9.2.0-P0829-x86_64-w64-mingw32.tar.gz"
-
-Compilers = [["GCC-ARM",
-              "https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/gcc-arm-none-eabi-9-2019-q4-major-win32.zip"],
-             ["GCC-WIN",
-              "http://ftp.vim.org/languages/qt/development_releases/prebuilt/mingw_32/i686-7.3.0-release-posix-dwarf-rt_v5-rev0.7z"],
-             ["GCC-AVR",
-              ""],
-             ["SFML",
-              "https://www.sfml-dev.org/files/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit.zip"]]
+Compilers = {
+    "GCC-ARM":
+        "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/9-2019q4/gcc-arm-none-eabi-9-2019-q4-major-win32.zip",
+    #   "https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/gcc-arm-none-eabi-9-2019-q4-major-win32.zip",
+    "GCC-WIN":
+        "https://www.nic.funet.fi/pub/mirrors/download.qt-project.org/development_releases/prebuilt/mingw_32/i686-7.3.0-release-posix-dwarf-rt_v5-rev0.7z",
+    #   "http://ftp.vim.org/languages/qt/development_releases/prebuilt/mingw_32/i686-7.3.0-release-posix-dwarf-rt_v5-rev0.7z",
+    "GCC-AVR":
+        "https://github.com/CrustyAuklet/avr-libstdcxx/releases/download/v9.2.0/avr-gcc-9.2.0-P0829-x86_64-w64-mingw32.tar.gz",
+    "SFML":
+        "https://www.sfml-dev.org/files/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit.zip"
+}
+CompilerPaths = {}
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -97,7 +117,7 @@ logger.info("Verifying Python, 7zip, git are installed (PATH and elsewhere)")
 # Make sure we have Python in the path
 PythonInPath = False
 PythonProgram = ""
-executablePath = distutils.spawn.find_executable("python.exe")
+executablePath = findExecutable("python.exe")
 if executablePath is not None:
     PythonProgram = safepath(executablePath)
     PythonInPath = True
@@ -105,7 +125,7 @@ if executablePath is not None:
 # Find 7z.exe (32 bit or 64 bit version)
 ZipInPath = False
 ZipProgram = ""
-executablePath = distutils.spawn.find_executable("7z.exe")
+executablePath = findExecutable("7z.exe")
 if executablePath is not None:
     ZipProgram = safepath(executablePath)
     ZipInPath = True
@@ -118,7 +138,7 @@ if not ZipInPath:
 # Find git.exe
 GitInPath = False
 GitProgram = ""
-executablePath = distutils.spawn.find_executable("git.exe")
+executablePath = findExecutable("git.exe")
 if executablePath is not None:
     GitProgram = safepath(executablePath)
     GitInPath = True
@@ -157,7 +177,7 @@ logger.info("Downloading GIT repositories")
 for repo in GitRepositories:
     repoName = repo[repo.rfind("/") + 1:repo.rfind(".")]
     if os.path.exists(repoName):
-        logger.info("Skipping git clone. Repository " + repoName + " exists and/or is not empty.")
+        logger.info("Skipping git clone. Repository " + repoName + " exists and is not empty.")
     else:
         logger.info("Start cloning repository " + repoName)
         process = subprocess.run([GitProgram, "clone", repo, repoName],
@@ -169,107 +189,97 @@ for repo in GitRepositories:
             logger.info("adjusting Catch2 - checkout v2.x")
             os.chdir(repoName)
             process = subprocess.run([GitProgram, "checkout", "v2.x"],
-                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             os.chdir("..")
 
 logger.info("Downloading and unpacking Compilers")
 for compiler in Compilers:
-    if compiler[0] == "GCC-AVR":
-        # TODO: re-integrate into normal workflow (except decompression)
-        logger.info("Download AVR Compiler")
-        compilerFile = "AVR-Compiler.tar.gz"
-        if os.path.exists(compilerFile):
-            logger.info("skipping download : " + compilerFile + " as it already exists")
-        else:
-            urllib.request.urlretrieve(AVR_COMPILER, compilerFile)
-            logger.info("Downloaded. Installing...")
-        tar = tarfile.open(compilerFile)
-        # get filestructure (we need the root)
-        filelist = tar.getnames()
-        AVR_Folder = filelist[0]
-        # unpack everything
-        tar.extractall()
-        tar.close()
-        compiler.append(AVR_Folder)
-        logger.info("AVR Compiler installed")
-    else:  # compiler is not GCC-AVR
-        # get our local file name
-        compilerFile = compiler[1][compiler[1].rfind("/") + 1:]
-        # add column in compiler with our BIN path name for the custom make later on
-        makefileName = compilerFile[:compilerFile.rfind(".")]
-        compiler.append(makefileName)
-        # check if the zip file is already there
-        if os.path.exists(compilerFile):
-            logger.info("skipping download : " + compilerFile + " as it already exists")
+    compilerURL = Compilers[compiler]
+    # get our local file name
+    compilerFile = compilerURL[compilerURL.rfind("/") + 1:]
+    # add entry in CompilerPaths with our BIN path name for the custom make later on
+    CompilerPaths[compiler] = compilerFile[:compilerFile.rfind(".")]
+    # check if the zip file is already there
+    if os.path.exists(compilerFile):
+        logger.info("skipping download : " + compilerFile + " as it already exists")
+        decompressable = True
+    else:
+        # not here yet, so download it
+        logger.info("Downloading from : " + compilerURL + " into " + compilerFile)
+        # get the filesize to be downloaded
+        req = urllib.request.Request(compilerURL, method='HEAD')
+        f = urllib.request.urlopen(req)
+        fileSize = int(f.headers['Content-Length'])
+        # start download
+        urllib.request.urlretrieve(compilerURL, compilerFile)
+        # check if filesizes are equal
+        localsize = os.stat(compilerFile).st_size
+        if localsize == fileSize:
+            logger.info("Download " + compilerFile + " was successful")
             decompressable = True
         else:
-            # not here yet, so download it
-            logger.info("Downloading from : " + compiler[1] + " into " + compilerFile)
-            # get the filesize to be downloaded
-            req = urllib.request.Request(compiler[1], method='HEAD')
-            f = urllib.request.urlopen(req)
-            fileSize = int(f.headers['Content-Length'])
-            # start download
-            urllib.request.urlretrieve(compiler[1], compilerFile)
-            # check if filesizes are equal
-            localsize = os.stat(compilerFile).st_size
-            if localsize == fileSize:
-                logger.info("Download " + compilerFile + " was successful")
-                decompressable = True
-            else:
-                logger.info("Download " + compilerFile + " failed. "
-                                                         "Downloaded " + localsize + ", should be " + fileSize)
-                decompressable = False
-                # TODO: retry the download a number of times (?)
-        # let's decompress the file if we can
-        if decompressable:
-            # extract in root of compilername
-            foldername = compilerFile[0:compilerFile.rfind(".")]
-            logger.info("Decompressing " + compilerFile + "...")
-            # TODO: see if finding install directory is better choice
-            # Special handling for SFML
-            if foldername.find("SFML-2.5.1") >= 0:
-                # delete any old SFML-2.5.1-32 folder
-                logger.info("Delete any existing SFML-2.5.1-32 folder")
-                shutil.rmtree('SFML-2.5.1-32', ignore_errors=True)
-                logger.info("Delete any existing SFML-2.5.1 folder")
+            logger.info("Download " + compilerFile + " failed. Downloaded " + localsize + ", should be " + fileSize)
+            decompressable = False
+            # TODO: retry the download a number of times (?) if it fails
+    # let's decompress the file if we can
+    if decompressable:
+        # extract in root of compilername
+        foldername = compilerFile[0:compilerFile.rfind(".")]
+        logger.info("Decompressing " + compilerFile + "...")
+        # TODO: see if finding install directory is better choice
+        # Special handling for SFML
+        if foldername.find("SFML-2.5.1") >= 0:
+            # delete any old SFML-2.5.1-32 folder
+            logger.info("Delete any existing SFML-2.5.1-32 folder")
+            shutil.rmtree('SFML-2.5.1-32', ignore_errors=True)
+            logger.info("Delete any existing SFML-2.5.1 folder")
+            shutil.rmtree('SFML-2.5.1', ignore_errors=True)
+            process = subprocess.run(
+                [ZipProgram, "x", compilerFile, "SFML-2.5.1", "-o.", "-y"],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # we get more output lines but need some cleaning
+            data = str(process.stdout)[2:-3].replace('\\r', '').replace('\\n', '\n').splitlines()
+            for line in data:
+                logger.info('  ' + line)
+            # rename the folder to SFML-2.5.1-32
+            logger.info("Rename SFML-2.5.1 to SFML-2.5.1-32")
+            try:
+                os.rename("SFML-2.5.1", "SFML-2.5.1-32")
+            except:
+                logger.error("FAIL Rename SFML-2.5.1 to SFML-2.5.1-32, trying copy-and-delete")
+                # Observation on HU employee laptop:
+                # The rename is giving problems concerning rights (WinError 5).
+                # For now, let's copy the folder and delete the original.
+                copytree("sfml-2.5.1", "sfml-2.5.1-32")
                 shutil.rmtree('SFML-2.5.1', ignore_errors=True)
-                process = subprocess.run(
-                    [ZipProgram, "x", compilerFile, "SFML-2.5.1", "-o.", "-y"],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                # we get more output lines but need some cleaning
-                data = str(process.stdout)[2:-3].replace('\\r', '').replace('\\n', '\n').splitlines()
-                for line in data:
-                    logger.info('  ' + line)
-                # rename the folder to SFML-2.5.1-32
-                logger.info("Rename SFML-2.5.1 to SFML-2.5.1-32")
-                try:
-                    os.rename("SFML-2.5.1", "SFML-2.5.1-32")
-                except:
-                    logger.error("FAIL Rename SFML-2.5.1 to SFML-2.5.1-32, trying copy-and-delete")
-                    # Observation on HU employee laptop:
-                    # The rename is giving problems concerning rights (WinError 5).
-                    # For now, let's copy the folder and delete the original.
-                    copytree("sfml-2.5.1", "sfml-2.5.1-32")
-                    shutil.rmtree('SFML-2.5.1', ignore_errors=True)
-            else:  # not SFML-2.5.1
-                process = subprocess.run(
-                    [ZipProgram, "x", compilerFile, "-o" + foldername, "-y"],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                data = str(process.stdout)[2:-3].replace('\\r', '').replace('\\n', '\n').splitlines()
-                for line in data:
-                    logger.info('  ' + line)
+        elif compilerFile.endswith('.tar.gz'):
+            tar = tarfile.open(compilerFile)
+            # get filestructure (we need the root)
+            filelist = tar.getnames()
+            # For TAR files (AVR Compiler) we use the pathname from the TAR file
+            CompilerPaths[compiler] = filelist[0]
+            # unpack everything
+            tar.extractall()
+            tar.close()
+            logger.info(compiler + " installed")
+        elif compilerFile.endswith('.7z') or compilerFile.endswith('.zip'):  # not SFML-2.5.1
+            process = subprocess.run(
+                [ZipProgram, "x", compilerFile, "-o" + foldername, "-y"],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            data = str(process.stdout)[2:-3].replace('\\r', '').replace('\\n', '\n').splitlines()
+            for line in data:
+                logger.info('  ' + line)
 logger.info("Downloaded and unpacked Compilers")
 
 # Special operation for the windows GCC-WIN compiler
 for compiler in Compilers:
-    if compiler[0] == "GCC-WIN":
+    if compiler == "GCC-WIN":
         # we have to check if it is the 32 or 64 bit compiler
-        if os.path.exists(compiler[2] + "\\mingw32"):
-            compiler[2] = compiler[2] + "\\mingw32"
+        if os.path.exists(CompilerPaths[compiler] + "\\mingw32"):
+            CompilerPaths[compiler] = CompilerPaths[compiler] + "\\mingw32"
         else:
-            compiler[2] = compiler[2] + "\\mingw64"
-    logger.info("GCC-WIN variant: " + compiler[2])
+            CompilerPaths[compiler] = CompilerPaths[compiler] + "\\mingw64"
+    logger.info("GCC-WIN variant: " + CompilerPaths[compiler])
 
 # create Makefile.custom in bmptk
 logger.info("Building bmptk\\Makefile.custom")
@@ -294,8 +304,8 @@ with open("bmptk\\Makefile.custom", "wt") as custom:
         if windowsPart and not commentLine:
             # if a line starts with a compiler definition, change it
             for compiler in Compilers:
-                if line.startswith(compiler[0]):
-                    outputLine = "   " + compiler[0] + "          ?= ..\\..\\" + compiler[2]
+                if line.startswith(compiler):
+                    outputLine = "   " + compiler + "          ?= ..\\..\\" + CompilerPaths[compiler]
         custom.write(outputLine + "\n")
 
 logger.info("Built Makefile.custom.")
